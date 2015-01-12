@@ -1,0 +1,51 @@
+#!/bin/bash
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+#    Version: 1.0
+#    Wine version used : 1.5.10
+#    Distribution used to test : Ubuntu 14.04.1
+#    Author : Stanislav Hadjiiski
+#
+[ "$PLAYONLINUX" = "" ] && exit 0
+source "$PLAYONLINUX/lib/sources"
+POL_SetupWindow_Init
+
+Set_OS winxp
+POL_System_SetArch "x86"
+POL_Wine_SelectPrefix "SRIM"
+POL_Wine_PrefixCreate
+
+cd ~/.PlayOnLinux/wineprefix/SRIM/drive_c/Program\ Files
+if [ ! -d "SRIM" ]; then
+  mkdir SRIM
+fi
+cd SRIM
+POL_SetupWindow_free_presentation "SRIM 2013 installer for Wine" "You are trying to get SRIM 2013 (standard version) on your Linux machine? This noobish script will try to make your life easier! Just make sure the downloaded exe file is named SRIM-2013-Std.exe and then follow the instructions."
+POL_SetupWindow_browse "Locate SRIM-2013-Std.exe file:" "Choose installer"
+cp $APP_ANSWER ./
+EXE_FILE="${APP_ANSWER##*/}"
+POL_SetupWindow_message "Leave the default folder. Choose extract, then OK, then Done." "Now extracting"
+wine "${EXE_FILE}"
+POL_SetupWindow_message "Installation must be fixed... Don't worry, just select Yes and then OK" "Now fixing installation"
+rm SRIM-2013-Std.exe
+cd SRIM-Setup
+wine MSVBvm50.exe
+cp *.ocx ~/.PlayOnLinux/wineprefix/SRIM/drive_c/windows/system32/
+POL_Shortcut "SRIM.exe" "SRIM 2013"
+POL_Shortcut "TRIM.exe" "TRIM 2013"
+
+POL_SetupWindow_message "Installation complete! SRIM and TRIM shortcuts added, try them out!" "Complete"
+
+POL_SetupWindow_Close
+exit
